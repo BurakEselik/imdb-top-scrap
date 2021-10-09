@@ -1,3 +1,4 @@
+import bs4
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -5,11 +6,13 @@ import csv
 movie_list = []
 top_movies_list = list()
 
-url = 'https://www.imdb.com/chart/top/?ref_=nv_mv_250'
-result = requests.get(url)
-soup = BeautifulSoup(result.text, 'html.parser')
+def get_url_data():
+    url = 'https://www.imdb.com/chart/top/?ref_=nv_mv_250'
+    result = requests.get(url)
+    soup = BeautifulSoup(result.text, 'html.parser')
+    return soup
 
-def extract_imdb_data():
+def extract_imdb_data(soup:object):
     global movie_list
     global top_movies_list
     t_body = soup.tbody
@@ -47,7 +50,8 @@ def convert_csv():
 
 
 def main():
-    extract_imdb_data()
+    soup = get_url_data()
+    extract_imdb_data(soup)
     convert_csv()
 
 
