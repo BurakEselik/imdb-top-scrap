@@ -2,9 +2,11 @@ import bs4
 import requests
 from bs4 import BeautifulSoup
 import csv
+import json
 
 movie_list = []
 top_movies_list = list()
+top_movies_dict = {'imdb_top_250':{}}
 
 def get_url_data():
     url = 'https://www.imdb.com/chart/top/?ref_=nv_mv_250'
@@ -48,11 +50,30 @@ def convert_csv():
         for row in rows:
             csvwriter.writerow(row)
 
+    
+def convert_json():
+    global top_movies_dict
+    if top_movies_list:
+        for movie in top_movies_list:
+            top_movies_dict['imdb_top_250'].update({
+                movie[0]:{
+                    'movie_name':movie[1],
+                    'date':movie[2],
+                    'rate':movie[-1]
+                }
+            })
+        top_movies_json = json.dumps(top_movies_dict, indent=4)
+        with open('imdb_top_250.json', 'w', encoding='utf-8') as outfile:
+            outfile.write(top_movies_json)
+    else:
+        return None
+
 
 def main():
     soup = get_url_data()
     extract_imdb_data(soup)
     convert_csv()
+    convert_json()
 
 
 if __name__ == '__main__':
